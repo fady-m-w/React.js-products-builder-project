@@ -44,14 +44,12 @@ const App = () => {
       >
         {input.label}
       </label>
-      {/* LINE BELOW IS WRONG FIX IT! */}
-      {/* <Input autoFocus={idx === 0} type={input.type} name={input.name} id={input.id} value={product[""]} onChange={onChangeHandler}/> */}
       <Input
         autoFocus={idx === 0}
         type={input.type}
         name={input.name}
         id={input.id}
-        value={""}
+        value={product[input.name]}
         onChange={onChangeHandler}
       />
     </div>
