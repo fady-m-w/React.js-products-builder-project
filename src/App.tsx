@@ -1,7 +1,7 @@
 import { useState, type ChangeEvent, type SubmitEvent } from "react";
 import ProductCard from "./components/ProductCard";
 import Modal from "./components/ui/Modal";
-import { colors, formInputsList, productsList } from "./data";
+import { categories, colors, formInputsList, productsList } from "./data";
 import Button from "./components/ui/Button";
 import Input from "./components/ui/Input";
 import type { Iproduct } from "./interfaces";
@@ -9,6 +9,7 @@ import { productValidation } from "./validation";
 import ErrorMessage from "./components/ErrorMessage";
 import CircleColor from "./components/CircleColor";
 import { v4 as uuid } from "uuid";
+import Select from "./components/ui/Select";
 
 const App = () => {
   const defaultProductObj = {
@@ -34,6 +35,7 @@ const App = () => {
   });
   const [tempColors, setTempColors] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(categories[0]);
 
   /* _________ HANDLER _________ */
   const openModal = () => setIsOpen(true);
@@ -73,7 +75,12 @@ const App = () => {
       return;
     }
     setProducts((prev) => [
-      { ...product, id: uuid(), colors: tempColors },
+      {
+        ...product,
+        id: uuid(),
+        colors: tempColors,
+        category: selectedCategory,
+      },
       ...prev,
     ]);
     setProduct(defaultProductObj);
@@ -136,6 +143,10 @@ const App = () => {
       <Modal isOpen={isOpen} closeModel={closeModal} title="ADD A NEW PRODUCT">
         <form className="space-y-3" onSubmit={submitHandler}>
           {renderFormInputList}
+          <Select
+            selected={selectedCategory}
+            setSelected={setSelectedCategory}
+          />
           <div className="flex flex-wrap items-center space-x-1">
             {tempColors.map((color) => (
               <span
@@ -150,6 +161,7 @@ const App = () => {
           <div className="flex flex-wrap items-center space-x-1">
             {renderProductColors}
           </div>
+
           <div className="flex items-center space-x-3">
             <Button className="bg-indigo-700 hover:bg-indigo-800">
               submit
