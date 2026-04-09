@@ -8,6 +8,7 @@ export const productValidation = (product: {
   description: string;
   imageURL: string;
   price: string;
+  colors: string[];
 }) => {
   // ** Returns an object
   const errors: {
@@ -15,11 +16,13 @@ export const productValidation = (product: {
     description: string;
     imageURL: string;
     price: string;
+    colors: string;
   } = {
     title: "",
     description: "",
     imageURL: "",
     price: "",
+    colors: "",
   };
 
   const validUrl = /^(ftp|http|https):\/\/[^ "]+$/.test(product.imageURL);
@@ -47,6 +50,14 @@ export const productValidation = (product: {
 
   if (!product.price.trim() || isNaN(Number(product.price))) {
     errors.price = "Valid Price Is Required";
+  }
+
+  if (!product.colors) {
+    errors.colors = "Not Colors Selected";
+  }
+
+  if (product.colors.length === 0) {
+    errors.colors = "Please select at least one color";
   }
 
   return errors;

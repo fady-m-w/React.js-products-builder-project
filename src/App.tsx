@@ -32,6 +32,7 @@ const App = () => {
     description: "",
     imageURL: "",
     price: "",
+    colors: "",
   });
   const [tempColors, setTempColors] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -60,18 +61,20 @@ const App = () => {
   const submitHandler = (event: SubmitEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const { title, description, imageURL, price } = product;
-    const errors = productValidation({
+    const validationErrors = productValidation({
       title,
       description,
       imageURL,
       price,
+      colors: tempColors,
     });
 
-    const hasErrorMsg =
-      Object.values(errors).some((value) => value === "") &&
-      Object.values(errors).every((value) => value === "");
-    if (!hasErrorMsg) {
-      setErrors(errors);
+    const hasErrorMsg = Object.values(validationErrors).some(
+      (value) => value !== "",
+    );
+
+    if (hasErrorMsg) {
+      setErrors(validationErrors);
       return;
     }
     setProducts((prev) => [
@@ -118,10 +121,25 @@ const App = () => {
       color={color}
       onClick={() => {
         if (tempColors.includes(color)) {
-          setTempColors((prev) => prev.filter((item) => item !== color));
+          setTempColors((prev) => {
+            const next = prev.filter((item) => item !== color);
+            // If next becomes empty, don't clear the error here — let submit set it.
+            // But if it's non-empty, clear the colors error immediately:
+            if (next.length > 0) {
+              setErrors((prev) => ({ ...prev, colors: "" }));
+            }
+            return next;
+          });
           return;
         }
-        setTempColors((prev) => [...prev, color]);
+        setTempColors((prev) => {
+          const next = [...prev, color];
+          // user selected at least one -> clear any colors error now
+          if (next.length > 0) {
+            setErrors((prev) => ({ ...prev, colors: "" }));
+          }
+          return next;
+        });
       }}
     />
   ));
@@ -158,6 +176,7 @@ const App = () => {
               </span>
             ))}
           </div>
+          <ErrorMessage msg={errors.colors} />
           <div className="flex flex-wrap items-center space-x-1">
             {renderProductColors}
           </div>
