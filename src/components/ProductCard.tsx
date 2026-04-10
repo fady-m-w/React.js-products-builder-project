@@ -5,15 +5,23 @@ import Image from "./Image";
 import Button from "./ui/Button";
 interface Iprops {
   product: Iproduct;
+  setProductToEdit: (product: Iproduct) => void;
+  openEditModal: () => void;
 }
 
-const ProductCard = ({ product }: Iprops) => {
+const ProductCard = ({ product, setProductToEdit, openEditModal }: Iprops) => {
   const { title, description, imageURL, price, colors, category } = product;
 
   /* _________ RENDER _________ */
   const renderProductColors = colors.map((color) => (
     <CircleColor key={color} color={color} />
   ));
+
+  /* _________ HANDLER _________ */
+  const onEdit = () => {
+    setProductToEdit(product);
+    openEditModal();
+  };
 
   return (
     <div className="max-w-sm md:max-w-lg mx-auto md:mx-0 border p-2 rounded-md flex flex-col space-y-3">
@@ -41,7 +49,9 @@ const ProductCard = ({ product }: Iprops) => {
       </div>
 
       <div className="flex items-center justify-between space-x-2">
-        <Button className="bg-indigo-700 hover:bg-indigo-800">edit</Button>
+        <Button className="bg-indigo-700 hover:bg-indigo-800" onClick={onEdit}>
+          edit
+        </Button>
         <Button className="bg-red-700 hover:bg-red-800">remove</Button>
       </div>
     </div>

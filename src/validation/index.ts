@@ -52,11 +52,10 @@ export const productValidation = (product: {
     errors.price = "Valid Price Is Required";
   }
 
-  if (!product.colors) {
-    errors.colors = "Not Colors Selected";
-  }
-
   if (product.colors.length === 0) {
+    // This condition checks if the colors array is empty.
+    // It ensures the user has selected at least one color before submitting the form.
+    // If no colors are selected, an error message will be returned to prevent submission.
     errors.colors = "Please select at least one color";
   }
 
