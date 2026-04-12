@@ -3,13 +3,22 @@ import { txtSlicer } from "../utils/functions";
 import CircleColor from "./CircleColor";
 import Image from "./Image";
 import Button from "./ui/Button";
+
 interface Iprops {
   product: Iproduct;
   setProductToEdit: (product: Iproduct) => void;
   openEditModal: () => void;
+  idx: number;
+  setProductToEditIdx: (value: number) => void;
 }
 
-const ProductCard = ({ product, setProductToEdit, openEditModal }: Iprops) => {
+const ProductCard = ({
+  product,
+  setProductToEdit,
+  openEditModal,
+  idx,
+  setProductToEditIdx,
+}: Iprops) => {
   const { title, description, imageURL, price, colors, category } = product;
 
   /* _________ RENDER _________ */
@@ -21,6 +30,7 @@ const ProductCard = ({ product, setProductToEdit, openEditModal }: Iprops) => {
   const onEdit = () => {
     setProductToEdit(product);
     openEditModal();
+    setProductToEditIdx(idx);
   };
 
   return (
@@ -31,7 +41,7 @@ const ProductCard = ({ product, setProductToEdit, openEditModal }: Iprops) => {
         className="rounded-md h-52 w-full lg:object-cover"
       />
       <h3 className="text-lg font-semibold">{title}</h3>
-      <p className="text-xs text-gray-500 wrap-break-word">
+      <p className="text-xs text-gray-500 wrap-break-word min-h-[31.98px]">
         {txtSlicer(description)}
       </p>
 

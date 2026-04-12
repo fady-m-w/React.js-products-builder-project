@@ -30,6 +30,7 @@ const App = () => {
   const [product, setProduct] = useState<Iproduct>(defaultProductObj);
   const [productToEdit, setProductToEdit] =
     useState<Iproduct>(defaultProductObj);
+  const [productToEditIdx, setProductToEditIdx] = useState<number>(0);
   const [errors, setErrors] = useState({
     title: "",
     description: "",
@@ -39,14 +40,14 @@ const App = () => {
   });
   const [tempColors, setTempColors] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [isOpenEditModal, setIsOpenEditModal] = useState(false);
+  const [isOpenEdit, setIsOpenEdit] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
 
   /* _________ HANDLER _________ */
-  const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
-  const openEditModal = () => setIsOpenEditModal(true);
-  const closeEditModal = () => setIsOpenEditModal(false);
+  const openModal = () => setIsOpen(true);
+  const closeEditModal = () => setIsOpenEdit(false);
+  const openEditModal = () => setIsOpenEdit(true);
   const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = event.target;
     setProduct({
@@ -58,6 +59,7 @@ const App = () => {
       [name]: "",
     });
   };
+
   const onChangeEditHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = event.target;
     setProductToEdit({
@@ -76,6 +78,7 @@ const App = () => {
   };
 
   const onEditCancel = () => {
+    // setProduct(defaultProductObj);
     closeEditModal();
   };
 
@@ -120,7 +123,7 @@ const App = () => {
       description,
       imageURL,
       price,
-      colors: tempColors,
+      colors: products[productToEditIdx].colors,
     });
 
     const hasErrorMsg = Object.values(validationErrors).some(
@@ -132,18 +135,27 @@ const App = () => {
       return;
     }
 
+    const updatedProducts = [...products];
+    updatedProducts[productToEditIdx] = {
+      ...productToEdit,
+      colors: tempColors.concat(productToEdit.colors),
+    };
+    setProducts(updatedProducts);
+
+    closeEditModal();
     setProductToEdit(defaultProductObj);
     setTempColors([]);
-    closeModal();
   };
 
   /* _________ RENDER _________ */
-  const renderProductList = products.map((product) => (
+  const renderProductList = products.map((product, idx) => (
     <ProductCard
       key={product.id}
       product={product}
       setProductToEdit={setProductToEdit}
       openEditModal={openEditModal}
+      idx={idx}
+      setProductToEditIdx={setProductToEditIdx}
     />
   ));
   const renderFormInputList = formInputsList.map((input, idx) => (
@@ -183,9 +195,13 @@ const App = () => {
           });
           return;
         }
+
+        if (productToEdit.colors.includes(color)) {
+          setTempColors((prev) => prev.filter((item) => item !== color));
+          return;
+        }
         setTempColors((prev) => {
           const next = [...prev, color];
-          // user selected at least one -> clear any colors error now
           if (next.length > 0) {
             setErrors((prev) => ({ ...prev, colors: "" }));
           }
@@ -195,7 +211,7 @@ const App = () => {
     />
   ));
 
-  const renderProductsEdit = (
+  const renderProductEdit = (
     id: string,
     label: string,
     type: string,
@@ -203,10 +219,7 @@ const App = () => {
   ) => {
     return (
       <div className="flex flex-col">
-        <label
-          htmlFor={name}
-          className="mb-px text-sm font-medium text-gray-700"
-        >
+        <label htmlFor={id} className="mb-px text-sm font-medium text-gray-700">
           {label}
         </label>
         <Input
@@ -275,32 +288,28 @@ const App = () => {
 
       {/* EDIT PRODUCT MODAL */}
       <Modal
-        isOpen={isOpenEditModal}
+        isOpen={isOpenEdit}
         closeModel={closeEditModal}
         title="EDIT THIS PRODUCT"
       >
         <form className="space-y-3" onSubmit={submitEditHandler}>
-          {renderProductsEdit("title", "Product Title", "text", "title")}
-          {renderProductsEdit(
+          {renderProductEdit("title", "Product Title", "text", "title")}
+          {renderProductEdit(
             "description",
             "Product Description",
             "text",
             "description",
           )}
-          {renderProductsEdit(
+          {renderProductEdit(
             "imageURL",
-            "Product imageURL",
+            "Product Image URL",
             "text",
             "imageURL",
           )}
-          {renderProductsEdit("price", "Product Price", "text", "price")}
-          {/* {renderFormInputList}
-          <Select
-            selected={selectedCategory}
-            setSelected={setSelectedCategory}
-          />
+          {renderProductEdit("price", "Product Price", "text", "price")}
+
           <div className="flex flex-wrap items-center space-x-1">
-            {tempColors.map((color) => (
+            {tempColors.concat(productToEdit.colors).map((color) => (
               <span
                 key={color}
                 className="p-1 mr-1 mb-1 text-xs rounded-md text-white"
@@ -313,7 +322,7 @@ const App = () => {
           <ErrorMessage msg={errors.colors} />
           <div className="flex flex-wrap items-center space-x-1">
             {renderProductColors}
-          </div> */}
+          </div>
 
           <div className="flex items-center space-x-3">
             <Button className="bg-indigo-700 hover:bg-indigo-800">
