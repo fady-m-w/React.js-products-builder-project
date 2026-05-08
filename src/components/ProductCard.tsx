@@ -7,8 +7,8 @@ import Button from "./ui/Button";
 interface Iprops {
   product: Iproduct;
   setProductToEdit: (product: Iproduct) => void;
-  openEditModal: () => void;
-  openRemoveModal: () => void
+  openEditModal: (color: string[]) => void;
+  openRemoveModal: () => void;
   idx: number;
   setProductToEditIdx: (value: number) => void;
 }
@@ -24,21 +24,23 @@ const ProductCard = ({
   const { title, description, imageURL, price, colors, category } = product;
 
   /* _________ RENDER _________ */
-  const renderProductColors = colors.map((color) => (
-    <CircleColor key={color} color={color} />
-  ));
+  const renderProductColors = !colors.length ? (
+    <p>No Colors Available</p>
+  ) : (
+    colors.map((color) => <CircleColor key={color} color={color} />)
+  );
 
   /* _________ HANDLER _________ */
   const onEdit = () => {
     setProductToEdit(product);
-    openEditModal();
+    openEditModal(product.colors);
     setProductToEditIdx(idx);
   };
-  
+
   const onRemove = () => {
     setProductToEdit(product);
-    openRemoveModal()
-  }
+    openRemoveModal();
+  };
 
   return (
     <div className="max-w-sm md:max-w-lg mx-auto md:mx-0 border border-[#bcc1ca] p-2 rounded-md flex flex-col space-y-3">
@@ -57,7 +59,9 @@ const ProductCard = ({
       </div>
 
       <div className="flex items-center justify-between">
-        <span className="text-lg text-indigo-600 font-semibold">${numberWithCommas(price)}</span>
+        <span className="text-lg text-indigo-600 font-semibold">
+          ${numberWithCommas(price)}
+        </span>
         <div className="flex items-center space-x-1.5">
           <span className="text-sm font-normal">{category.name}</span>
           <Image
@@ -72,7 +76,9 @@ const ProductCard = ({
         <Button className="bg-indigo-600 hover:opacity-90" onClick={onEdit}>
           edit
         </Button>
-        <Button className="bg-[#c2344d] hover:opacity-90" onClick={onRemove}>remove</Button>
+        <Button className="bg-[#c2344d] hover:opacity-90" onClick={onRemove}>
+          remove
+        </Button>
       </div>
     </div>
   );

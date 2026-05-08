@@ -65,7 +65,11 @@ const App = () => {
     setIsOpen(true);
   };
   const closeEditModal = () => setIsOpenEdit(false);
-  const openEditModal = () => setIsOpenEdit(true);
+  const openEditModal = (colors: string[]) => {
+    resetForm();
+    setTempColors(colors);
+    setIsOpenEdit(true);
+  };
   const closeRemoveModal = () => setIsOpenRemove(false);
   const openRemoveModal = () => setIsOpenRemove(true);
   const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -143,7 +147,7 @@ const App = () => {
     const hasChanges =
       JSON.stringify({
         ...productToEdit,
-        colors: tempColors.concat(productToEdit.colors),
+        colors: [...tempColors],
       }) !== JSON.stringify(originalProduct);
 
     if (!hasChanges) {
@@ -171,7 +175,7 @@ const App = () => {
     const updatedProducts = [...products];
     updatedProducts[productToEditIdx] = {
       ...productToEdit,
-      colors: tempColors.concat(productToEdit.colors),
+      colors: [...tempColors],
     };
     setProducts(updatedProducts);
 
@@ -234,8 +238,6 @@ const App = () => {
         if (tempColors.includes(color)) {
           setTempColors((prev) => {
             const next = prev.filter((item) => item !== color);
-            // If next becomes empty, don't clear the error here — let submit set it.
-            // But if it's non-empty, clear the colors error immediately:
             if (next.length > 0) {
               setErrors((prev) => ({ ...prev, colors: "" }));
             }
@@ -244,10 +246,6 @@ const App = () => {
           return;
         }
 
-        if (productToEdit.colors.includes(color)) {
-          setTempColors((prev) => prev.filter((item) => item !== color));
-          return;
-        }
         setTempColors((prev) => {
           const next = [...prev, color];
           if (next.length > 0) {
@@ -374,7 +372,7 @@ const App = () => {
           />
 
           <div className="flex flex-wrap items-center space-x-1">
-            {tempColors.concat(productToEdit.colors).map((color) => (
+            {tempColors.map((color) => (
               <span
                 key={color}
                 className="p-1 mr-1 mb-1 text-xs rounded-md text-white"
