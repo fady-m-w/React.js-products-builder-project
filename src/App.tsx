@@ -11,7 +11,7 @@ import CircleColor from "./components/CircleColor";
 import { v4 as uuid } from "uuid";
 import Select from "./components/ui/Select";
 import type { TProductsName } from "./types";
-
+import toast, { Toaster } from "react-hot-toast";
 const App = () => {
   const defaultProductObj = {
     title: "",
@@ -20,6 +20,7 @@ const App = () => {
     price: "",
     colors: [],
     category: {
+      id: "",
       name: "",
       imageURL: "",
     },
@@ -41,13 +42,32 @@ const App = () => {
   const [tempColors, setTempColors] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
+  const [isOpenRemove, setIsOpenRemove] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
 
   /* _________ HANDLER _________ */
+  const resetForm = () => {
+    setProduct(defaultProductObj);
+    setErrors({
+      title: "",
+      description: "",
+      imageURL: "",
+      price: "",
+      colors: "",
+    });
+    setTempColors([]);
+    setSelectedCategory(categories[0]);
+  };
+
   const closeModal = () => setIsOpen(false);
-  const openModal = () => setIsOpen(true);
+  const openModal = () => {
+    resetForm();
+    setIsOpen(true);
+  };
   const closeEditModal = () => setIsOpenEdit(false);
   const openEditModal = () => setIsOpenEdit(true);
+  const closeRemoveModal = () => setIsOpenRemove(false);
+  const openRemoveModal = () => setIsOpenRemove(true);
   const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = event.target;
     setProduct({
@@ -73,12 +93,11 @@ const App = () => {
   };
 
   const onCancel = () => {
-    setProduct(defaultProductObj);
+    resetForm();
     closeModal();
   };
 
   const onEditCancel = () => {
-    // setProduct(defaultProductObj);
     closeEditModal();
   };
 
@@ -113,10 +132,24 @@ const App = () => {
     setProduct(defaultProductObj);
     setTempColors([]);
     closeModal();
+    toast("Product Has Been Added!", {
+      icon: "🎉",
+    });
   };
 
   const submitEditHandler = (event: SubmitEvent<HTMLFormElement>): void => {
     event.preventDefault();
+    const originalProduct = products[productToEditIdx];
+    const hasChanges =
+      JSON.stringify({
+        ...productToEdit,
+        colors: tempColors.concat(productToEdit.colors),
+      }) !== JSON.stringify(originalProduct);
+
+    if (!hasChanges) {
+      toast("No changes were made.", { icon: "ℹ️" });
+      return;
+    }
     const { title, description, imageURL, price } = productToEdit;
     const validationErrors = productValidation({
       title,
@@ -145,6 +178,20 @@ const App = () => {
     closeEditModal();
     setProductToEdit(defaultProductObj);
     setTempColors([]);
+    toast("Product Has Been Updated.", {
+      icon: "🔃",
+    });
+  };
+
+  const removeHandler = () => {
+    const filtered = products.filter(
+      (product) => product.id !== productToEdit.id,
+    );
+    setProducts(filtered);
+    closeRemoveModal();
+    toast("Product Has Been Deleted.", {
+      icon: "❌",
+    });
   };
 
   /* _________ RENDER _________ */
@@ -154,6 +201,7 @@ const App = () => {
       product={product}
       setProductToEdit={setProductToEdit}
       openEditModal={openEditModal}
+      openRemoveModal={openRemoveModal}
       idx={idx}
       setProductToEditIdx={setProductToEditIdx}
     />
@@ -237,15 +285,24 @@ const App = () => {
   return (
     <main className="container ">
       <Button
-        className="block bg-indigo-700 hover:bg-indigo-800 mx-auto my-10 px-10 font-medium"
+        className="block bg-indigo-600 hover:opacity-90 ml-6 my-10 px-6 font-medium"
         width="w-fit"
         onClick={openModal}
       >
-        build product
+        Add product
       </Button>
 
       <div className="m-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-4 p-2 rounded-md">
-        {renderProductList}
+        {products.length === 0 ? (
+          <p
+            className="text-center text-5xl mx-auto font-bold col-span-full"
+            style={{ color: "#c2344d" }}
+          >
+            No products available :(
+          </p>
+        ) : (
+          renderProductList
+        )}
       </div>
 
       {/* ADD PRODUCT MODAL */}
@@ -277,6 +334,7 @@ const App = () => {
               submit
             </Button>
             <Button
+              type="button"
               className="bg-gray-400 hover:bg-gray-500"
               onClick={onCancel}
             >
@@ -308,6 +366,13 @@ const App = () => {
           )}
           {renderProductEdit("price", "Product Price", "text", "price")}
 
+          <Select
+            selected={productToEdit.category}
+            setSelected={(value) =>
+              setProductToEdit({ ...productToEdit, category: value })
+            }
+          />
+
           <div className="flex flex-wrap items-center space-x-1">
             {tempColors.concat(productToEdit.colors).map((color) => (
               <span
@@ -329,6 +394,7 @@ const App = () => {
               submit
             </Button>
             <Button
+              type="button"
               className="bg-gray-400 hover:bg-gray-500"
               onClick={onEditCancel}
             >
@@ -337,6 +403,34 @@ const App = () => {
           </div>
         </form>
       </Modal>
+
+      {/* DELETE MODAL */}
+      <Modal
+        isOpen={isOpenRemove}
+        closeModel={closeRemoveModal}
+        title="Are You Sure To Remove This Product From Your Store"
+      >
+        <p className="text-md text-gray-500 font-medium">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur
+          neque provident nisi eveniet tempore corrupti similique accusamus
+          officia totam incidunt?
+        </p>
+        <div className="flex gap-3 pt-1  ">
+          <Button className="flex-1 bg-[#c2344d] " onClick={removeHandler}>
+            Yes, Remove
+          </Button>
+          <Button
+            type="button"
+            onClick={closeRemoveModal}
+            className="flex-1 bg-gray-100 hover:bg-gray-200"
+            style={{ color: "black" }}
+          >
+            Cancel
+          </Button>
+        </div>
+      </Modal>
+
+      <Toaster />
     </main>
   );
 };

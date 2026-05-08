@@ -12,6 +12,7 @@ export const productsList: Iproduct[] = [
     price: "120",
     colors: ["#a855f7", "#2563eb", "#84D2C5"],
     category: {
+      id: uuid(),
       name: "electronics",
       imageURL:
         "https://images.unsplash.com/photo-1491927570842-0261e477d937?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -27,6 +28,7 @@ export const productsList: Iproduct[] = [
     price: "150000",
     colors: ["#a855f7", "#84D2C5"],
     category: {
+      id: uuid(),
       name: "electronics",
       imageURL:
         "https://images.unsplash.com/photo-1659471256108-2abfe4c901ea?q=80&w=714&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -42,6 +44,7 @@ export const productsList: Iproduct[] = [
     price: "80",
     colors: ["#CB1C8D", "#000000"],
     category: {
+      id: uuid(),
       name: "sportswear",
       imageURL:
         "https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -57,6 +60,7 @@ export const productsList: Iproduct[] = [
     price: "500000",
     colors: ["#a855f7", "#FFD700", "#000000"],
     category: {
+      id: uuid(),
       name: "automotive",
       imageURL:
         "https://images.unsplash.com/photo-1556800572-1b8aeef2c54f?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -72,6 +76,7 @@ export const productsList: Iproduct[] = [
     price: "200",
     colors: ["#C0C0C0", "#000000"],
     category: {
+      id: uuid(),
       name: "electronics",
       imageURL:
         "https://images.unsplash.com/photo-1546868871-7041f2a55e12?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -87,6 +92,7 @@ export const productsList: Iproduct[] = [
     price: "120000",
     colors: ["#FFD700", "#000000"],
     category: {
+      id: uuid(),
       name: "electronics",
       imageURL:
         "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -102,6 +108,7 @@ export const productsList: Iproduct[] = [
     price: "250",
     colors: ["#1F8A70"],
     category: {
+      id: uuid(),
       name: "accessories",
       imageURL:
         "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?q=80&w=1589&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -117,6 +124,7 @@ export const productsList: Iproduct[] = [
     price: "300000",
     colors: ["#FF6E31", "#C0C0C0"],
     category: {
+      id: uuid(),
       name: "accessories",
       imageURL:
         "https://images.unsplash.com/photo-1603351154351-5e2d0600bb77?q=80&w=1471&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -132,6 +140,7 @@ export const productsList: Iproduct[] = [
     price: "2500",
     colors: ["#000000", "#6C4AB6"],
     category: {
+      id: uuid(),
       name: "Computers",
       imageURL:
         "https://images.unsplash.com/photo-1640955014216-75201056c829?q=80&w=1632&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -147,6 +156,7 @@ export const productsList: Iproduct[] = [
     price: "200000",
     colors: ["#DAA520", "#A9A9A9"],
     category: {
+      id: uuid(),
       name: "Computers",
       imageURL:
         "https://images.unsplash.com/photo-1611078489935-0cb964de46d6?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",

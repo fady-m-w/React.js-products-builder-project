@@ -20,7 +20,7 @@ const Modal = ({ isOpen, closeModel, title, children }: Iprops) => {
         {/* الخلفية */}
         <DialogBackdrop
           transition
-          className="fixed inset-0 bg-black/40 data-closed:opacity-0 duration-300 ease-out"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm data-closed:opacity-0 duration-300 ease-out"
         />
 
         {/* المحتوى */}

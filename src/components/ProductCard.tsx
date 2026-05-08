@@ -1,5 +1,5 @@
 import type { Iproduct } from "../interfaces";
-import { txtSlicer } from "../utils/functions";
+import { numberWithCommas, txtSlicer } from "../utils/functions";
 import CircleColor from "./CircleColor";
 import Image from "./Image";
 import Button from "./ui/Button";
@@ -8,6 +8,7 @@ interface Iprops {
   product: Iproduct;
   setProductToEdit: (product: Iproduct) => void;
   openEditModal: () => void;
+  openRemoveModal: () => void
   idx: number;
   setProductToEditIdx: (value: number) => void;
 }
@@ -18,6 +19,7 @@ const ProductCard = ({
   openEditModal,
   idx,
   setProductToEditIdx,
+  openRemoveModal,
 }: Iprops) => {
   const { title, description, imageURL, price, colors, category } = product;
 
@@ -32,9 +34,14 @@ const ProductCard = ({
     openEditModal();
     setProductToEditIdx(idx);
   };
+  
+  const onRemove = () => {
+    setProductToEdit(product);
+    openRemoveModal()
+  }
 
   return (
-    <div className="max-w-sm md:max-w-lg mx-auto md:mx-0 border p-2 rounded-md flex flex-col space-y-3">
+    <div className="max-w-sm md:max-w-lg mx-auto md:mx-0 border border-[#bcc1ca] p-2 rounded-md flex flex-col space-y-3">
       <Image
         imageUrl={imageURL}
         alt={"product name"}
@@ -50,19 +57,22 @@ const ProductCard = ({
       </div>
 
       <div className="flex items-center justify-between">
-        <span className="text-lg text-indigo-600 font-semibold">${price}</span>
-        <Image
-          imageUrl={category.imageURL}
-          alt={category.name}
-          className="w-10 h-10 rounded-full cursor-pointer object-bottom"
-        />
+        <span className="text-lg text-indigo-600 font-semibold">${numberWithCommas(price)}</span>
+        <div className="flex items-center space-x-1.5">
+          <span className="text-sm font-normal">{category.name}</span>
+          <Image
+            imageUrl={category.imageURL}
+            alt={category.name}
+            className="w-10 h-10 rounded-full cursor-pointer object-bottom"
+          />
+        </div>
       </div>
 
       <div className="flex items-center justify-between space-x-2">
-        <Button className="bg-indigo-700 hover:bg-indigo-800" onClick={onEdit}>
+        <Button className="bg-indigo-600 hover:opacity-90" onClick={onEdit}>
           edit
         </Button>
-        <Button className="bg-red-700 hover:bg-red-800">remove</Button>
+        <Button className="bg-[#c2344d] hover:opacity-90" onClick={onRemove}>remove</Button>
       </div>
     </div>
   );
