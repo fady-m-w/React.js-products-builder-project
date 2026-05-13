@@ -1,63 +1,39 @@
-/**
- *
- * @param product
- * @returns
- */
-export const productValidation = (product: {
-  title: string;
-  description: string;
-  imageURL: string;
-  price: string;
-  colors: string[];
-}) => {
-  // ** Returns an object
-  const errors: {
-    title: string;
-    description: string;
-    imageURL: string;
-    price: string;
-    colors: string;
-  } = {
-    title: "",
-    description: "",
-    imageURL: "",
-    price: "",
-    colors: "",
-  };
+import { z } from "zod";
 
-  const validUrl = /^(ftp|http|https):\/\/[^ "]+$/.test(product.imageURL);
+const stringSchema = (min: number, max: number, inputName: string) =>
+  z
+    .string()
+    .min(min, `${inputName} Must Be Between ${min} And ${max} Characters!`)
+    .max(max, `${inputName} Must Be Between ${min} And ${max} Characters!`);
 
-  if (
-    !product.title.trim() ||
-    product.title.length < 10 ||
-    product.title.length > 80
-  ) {
-    errors.title = "Product Title Must Be Between 10 And 80 Characters!";
-  }
+export const productAddSchema = z.object({
+  title: stringSchema(10, 80, "Product Title"),
 
-  if (
-    !product.description.trim() ||
-    product.description.length < 10 ||
-    product.description.length > 900
-  ) {
-    errors.description =
-      "Product Description Must Be Between 10 And 900 Characters!";
-  }
+  description: stringSchema(10, 900, "Product Description"),
 
-  if (!product.imageURL.trim() || !validUrl) {
-    errors.imageURL = "Valid Image URL Is Required";
-  }
+  imageURL: z
+    .string()
+    .regex(/^(ftp|http|https):\/\/[^ "]+$/, "Valid Image URL Is Required"),
 
-  if (!product.price.trim() || isNaN(Number(product.price))) {
-    errors.price = "Valid Price Is Required";
-  }
+  price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+    message: "Valid Price Is Required",
+  }),
 
-  if (product.colors.length === 0) {
-    // This condition checks if the colors array is empty.
-    // It ensures the user has selected at least one color before submitting the form.
-    // If no colors are selected, an error message will be returned to prevent submission.
-    errors.colors = "Please select at least one color";
-  }
+  colors: z.array(z.string()).min(1, "Please select at least one color"),
+});
 
-  return errors;
-};
+export const productEditSchema = z.object({
+  title: stringSchema(10, 80, "Product Title"),
+
+  description: stringSchema(10, 900, "Product Description"),
+
+  imageURL: z
+    .string()
+    .regex(/^(ftp|http|https):\/\/[^ "]+$/, "Valid Image URL Is Required"),
+
+  price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+    message: "Valid Price Is Required",
+  }),
+
+  colors: z.array(z.string()),
+});

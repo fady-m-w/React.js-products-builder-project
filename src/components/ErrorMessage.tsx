@@ -4,7 +4,7 @@ interface Iprops {
 
 const ErrorMessage = ({ msg }: Iprops) => {
   return msg ? (
-    <span className="block text-red-700 font-semibold text-sm">{msg}</span>
+    <span className="block text-[#c2344d] font-semibold text-sm">{msg}</span>
   ) : null;
 };
 

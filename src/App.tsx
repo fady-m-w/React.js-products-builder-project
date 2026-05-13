@@ -5,7 +5,8 @@ import { categories, colors, formInputsList, productsList } from "./data";
 import Button from "./components/ui/Button";
 import Input from "./components/ui/Input";
 import type { Iproduct } from "./interfaces";
-import { productValidation } from "./validation";
+import { productAddSchema, productEditSchema } from "./validation";
+import { z } from "zod";
 import ErrorMessage from "./components/ErrorMessage";
 import CircleColor from "./components/CircleColor";
 import { v4 as uuid } from "uuid";
@@ -32,13 +33,7 @@ const App = () => {
   const [productToEdit, setProductToEdit] =
     useState<Iproduct>(defaultProductObj);
   const [productToEditIdx, setProductToEditIdx] = useState<number>(0);
-  const [errors, setErrors] = useState({
-    title: "",
-    description: "",
-    imageURL: "",
-    price: "",
-    colors: "",
-  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [tempColors, setTempColors] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
@@ -48,13 +43,7 @@ const App = () => {
   /* _________ HANDLER _________ */
   const resetForm = () => {
     setProduct(defaultProductObj);
-    setErrors({
-      title: "",
-      description: "",
-      imageURL: "",
-      price: "",
-      colors: "",
-    });
+    setErrors({});
     setTempColors([]);
     setSelectedCategory(categories[0]);
   };
@@ -107,84 +96,77 @@ const App = () => {
 
   const submitHandler = (event: SubmitEvent<HTMLFormElement>): void => {
     event.preventDefault();
-    const { title, description, imageURL, price } = product;
-    const validationErrors = productValidation({
-      title,
-      description,
-      imageURL,
-      price,
-      colors: tempColors,
-    });
-
-    const hasErrorMsg = Object.values(validationErrors).some(
-      (value) => value !== "",
-    );
-
-    if (hasErrorMsg) {
-      setErrors(validationErrors);
-      return;
-    }
-    setProducts((prev) => [
-      {
+    try {
+      productAddSchema.parse({
         ...product,
-        id: uuid(),
         colors: tempColors,
-        category: selectedCategory,
-      },
-      ...prev,
-    ]);
-    setProduct(defaultProductObj);
-    setTempColors([]);
-    closeModal();
-    toast("Product Has Been Added!", {
-      icon: "🎉",
-    });
+      });
+      setErrors({});
+      setProducts((prev) => [
+        {
+          ...product,
+          id: uuid(),
+          colors: tempColors,
+          category: selectedCategory,
+        },
+        ...prev,
+      ]);
+      resetForm();
+      closeModal();
+      toast("Product Has Been Added!", { icon: "🎉" });
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const validationErrors = err.issues.reduce(
+          (acc, e) => {
+            acc[e.path[0] as string] = e.message;
+            return acc;
+          },
+          {} as Record<string, string>,
+        );
+        setErrors(validationErrors);
+      }
+    }
   };
 
   const submitEditHandler = (event: SubmitEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const originalProduct = products[productToEditIdx];
     const hasChanges =
-      JSON.stringify({
-        ...productToEdit,
-        colors: [...tempColors],
-      }) !== JSON.stringify(originalProduct);
+      JSON.stringify({ ...productToEdit, colors: [...tempColors] }) !==
+      JSON.stringify(originalProduct);
 
     if (!hasChanges) {
       toast("No changes were made.", { icon: "ℹ️" });
       return;
     }
-    const { title, description, imageURL, price } = productToEdit;
-    const validationErrors = productValidation({
-      title,
-      description,
-      imageURL,
-      price,
-      colors: products[productToEditIdx].colors,
-    });
 
-    const hasErrorMsg = Object.values(validationErrors).some(
-      (value) => value !== "",
-    );
-
-    if (hasErrorMsg) {
-      setErrors(validationErrors);
-      return;
+    try {
+      productEditSchema.parse({
+        ...productToEdit,
+        colors: tempColors,
+      });
+      setErrors({});
+      const updatedProducts = [...products];
+      updatedProducts[productToEditIdx] = {
+        ...productToEdit,
+        colors: [...tempColors],
+      };
+      setProducts(updatedProducts);
+      closeEditModal();
+      resetForm();
+      toast("Product Has Been Updated.", { icon: "🔃" });
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const validationErrors = err.issues.reduce(
+          (acc, e) => {
+            acc[e.path[0] as string] = e.message;
+            return acc;
+          },
+          {} as Record<string, string>,
+        );
+        setErrors(validationErrors);
+      }
     }
-
-    const updatedProducts = [...products];
-    updatedProducts[productToEditIdx] = {
-      ...productToEdit,
-      colors: [...tempColors],
-    };
-    setProducts(updatedProducts);
-
-    closeEditModal();
-    setProductToEdit(defaultProductObj);
-    setTempColors([]);
-    toast("Product Has Been Updated.", {
-      icon: "🔃",
-    });
   };
 
   const removeHandler = () => {

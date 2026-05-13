@@ -25,7 +25,7 @@ const ProductCard = ({
 
   /* _________ RENDER _________ */
   const renderProductColors = !colors.length ? (
-    <p>No Colors Available</p>
+    <p className="text-[#c2344d] font-medium">No Colors Available :(</p>
   ) : (
     colors.map((color) => <CircleColor key={color} color={color} />)
   );
