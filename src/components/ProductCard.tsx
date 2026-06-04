@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { Iproduct } from "../interfaces";
 import { numberWithCommas, txtSlicer } from "../utils/functions";
 import CircleColor from "./CircleColor";
@@ -84,4 +85,6 @@ const ProductCard = ({
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard, (prevProps, nextProps) => {
+  return prevProps.product.id === nextProps.product.id;
+});

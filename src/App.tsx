@@ -1,4 +1,10 @@
-import { useState, type ChangeEvent, type SubmitEvent } from "react";
+import {
+  useCallback,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type SubmitEvent,
+} from "react";
 import ProductCard from "./components/ProductCard";
 import Modal from "./components/ui/Modal";
 import { categories, colors, formInputsList, productsList } from "./data";
@@ -14,18 +20,20 @@ import Select from "./components/ui/Select";
 import type { TProductsName } from "./types";
 import toast, { Toaster } from "react-hot-toast";
 const App = () => {
-  const defaultProductObj = {
-    title: "",
-    description: "",
-    imageURL: "",
-    price: "",
-    colors: [],
-    category: {
-      id: "",
-      name: "",
+  const defaultProductObj = useMemo(() => {
+    return {
+      title: "",
+      description: "",
       imageURL: "",
-    },
-  };
+      price: "",
+      colors: [],
+      category: {
+        id: "",
+        name: "",
+        imageURL: "",
+      },
+    };
+  }, []);
 
   /* _________ STATE _________ */
   const [products, setProducts] = useState<Iproduct[]>(productsList);
@@ -41,37 +49,43 @@ const App = () => {
   const [selectedCategory, setSelectedCategory] = useState(categories[0]);
 
   /* _________ HANDLER _________ */
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setProduct(defaultProductObj);
     setErrors({});
     setTempColors([]);
     setSelectedCategory(categories[0]);
-  };
+  }, [defaultProductObj]);
 
   const closeModal = () => setIsOpen(false);
-  const openModal = () => {
+  const openModal = useCallback(() => {
     resetForm();
     setIsOpen(true);
-  };
+  }, [resetForm]);
   const closeEditModal = () => setIsOpenEdit(false);
-  const openEditModal = (colors: string[]) => {
-    resetForm();
-    setTempColors(colors);
-    setIsOpenEdit(true);
-  };
+  const openEditModal = useCallback(
+    (colors: string[]) => {
+      resetForm();
+      setTempColors(colors);
+      setIsOpenEdit(true);
+    },
+    [resetForm],
+  );
   const closeRemoveModal = () => setIsOpenRemove(false);
   const openRemoveModal = () => setIsOpenRemove(true);
-  const onChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
-    const { value, name } = event.target;
-    setProduct({
-      ...product,
-      [name]: value,
-    });
-    setErrors({
-      ...errors,
-      [name]: "",
-    });
-  };
+  const onChangeHandler = useCallback(
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const { value, name } = event.target;
+      setProduct((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    },
+    [],
+  );
 
   const onChangeEditHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { value, name } = event.target;
@@ -85,10 +99,10 @@ const App = () => {
     });
   };
 
-  const onCancel = () => {
+  const onCancel = useCallback(() => {
     resetForm();
     closeModal();
-  };
+  }, [resetForm]);
 
   const onEditCancel = () => {
     closeEditModal();

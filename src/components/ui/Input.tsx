@@ -1,4 +1,4 @@
-import type { InputHTMLAttributes } from "react";
+import { memo, type InputHTMLAttributes } from "react";
 
 type Iprops = InputHTMLAttributes<HTMLInputElement>;
 
@@ -13,4 +13,4 @@ const Input = ({ ...rest }: Iprops) => {
   );
 };
 
-export default Input;
+export default memo(Input);
